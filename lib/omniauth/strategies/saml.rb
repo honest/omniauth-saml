@@ -55,6 +55,8 @@ module OmniAuth
         @name_id = response.name_id
         @attributes = response.attributes
 
+        puts "SAML Email is #{@attributes[:Email]}"
+
         if @name_id.nil? || @name_id.empty?
           raise OmniAuth::Strategies::SAML::ValidationError.new("SAML response missing 'name_id'")
         end
@@ -109,10 +111,26 @@ module OmniAuth
       info do
         {
           :name  => @attributes[:name],
-          :email => @attributes[:email] || @attributes[:mail],
-          :first_name => @attributes[:first_name] || @attributes[:firstname] || @attributes[:firstName],
-          :last_name => @attributes[:last_name] || @attributes[:lastname] || @attributes[:lastName]
+          :email => get_string(email),
+          :first_name => get_string(first_name),
+          :last_name => get_string(last_name)
         }
+      end
+
+      def first_name
+        @attributes[:first_name] || @attributes[:firstname] || @attributes[:firstName] || @attributes[:FirstName]
+      end
+
+      def last_name
+        @attributes[:last_name] || @attributes[:lastname] || @attributes[:lastName] || @attributes[:LastName]
+      end
+
+      def email
+        @attributes[:email] || @attributes[:mail]  || @attributes[:Email]
+      end
+
+      def get_string(val)
+        val.is_a?(Array) ? val.first : val
       end
 
       extra { { :raw_info => @attributes } }
