@@ -46,6 +46,8 @@ module OmniAuth
           options.idp_cert_fingerprint = fingerprint_exists
         end
 
+        puts "SAML Params are #{request.params['SAMLResponse'].inspect}"
+
         response = OneLogin::RubySaml::Response.new(request.params['SAMLResponse'], options)
         response.settings = OneLogin::RubySaml::Settings.new(options)
         response.attributes['fingerprint'] = options.idp_cert_fingerprint
@@ -58,8 +60,10 @@ module OmniAuth
         end
 
         # will raise an error since we are not in soft mode
-        response.soft = false
-        response.is_valid?
+        response.soft = true
+        valid = response.is_valid?
+
+        puts "SAML Response valid = #{valid}"
 
         super
       rescue OmniAuth::Strategies::SAML::ValidationError
