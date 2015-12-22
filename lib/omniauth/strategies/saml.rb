@@ -62,10 +62,8 @@ module OmniAuth
         end
 
         # will raise an error since we are not in soft mode
-        response.soft = true
-        valid = response.is_valid?
-
-        puts "SAML Response valid = #{valid}"
+        response.soft = false
+        response.is_valid?
 
         super
       rescue OmniAuth::Strategies::SAML::ValidationError
